@@ -7,9 +7,14 @@ import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import  '../styles/input.css'
 
-const EditableRow = (props: {item: CreateTrainScheduleDto, editTrainSchedule: (event: any, item: CreateTrainScheduleDto) => void,
-     cancelEdit: () => void}) => {
- //   const [newTrainSchedule, setNewTrainSchedule] = useState<CreateTrainScheduleDto>(props.item);
+const EditableRow = (
+    props: {
+        item: CreateTrainScheduleDto,
+        editTrainSchedule: (item: CreateTrainScheduleDto) => void,
+        cancelEdit: () => void
+    }
+) => {
+
     const {
         register,
         watch,
@@ -21,32 +26,31 @@ const EditableRow = (props: {item: CreateTrainScheduleDto, editTrainSchedule: (e
 
     useEffect(() => {
         register("departureDate", { required:true, validate: { isBefore } });
+        register("typeOfTrainCar", { required:true });
+
         watch();
     });
 
-  const onSubmit = (event: any) => {
-    event.preventDefault();
-    handleSubmit(() => {});
+    const onSubmit = () => {
+        let newTrainSchedule = getValues();
+        props.editTrainSchedule(newTrainSchedule);
+    };
 
-    let newTrainSchedule = getValues();
-    props.editTrainSchedule(event, newTrainSchedule);
-  };
-
-  const cancenEdit = (event: any) => {
-    event.preventDefault();
-    props.cancelEdit();
-  }
-
-
-  const isBefore = (date: Date) => {
-    if (!date) {
-        return false;
+    const cancenEdit = (event: any) => {
+        event.preventDefault();
+        props.cancelEdit();
     }
-    return date > getValues().arrivalDate;
-  };
+
+
+    const isBefore = (date: Date) => {
+        if (!date) {
+            return false;
+        }
+        return date < getValues().arrivalDate;
+    };
 
     const options = ['truck', 'econom', 'business'];
-    const defaultOption = options[0];
+
     return (
         <tr>
             <td></td>
@@ -68,26 +72,26 @@ const EditableRow = (props: {item: CreateTrainScheduleDto, editTrainSchedule: (e
             </td>
             <td>
                 <DatePicker
-                    selected={getValues().arrivalDate}
-                    timeInputLabel="Time:"
-                    dateFormat="MM/dd/yyyy h:mm aa"
-                    showTimeInput
-                    placeholderText="Select a date and time"
-                    required
-                    onChange={(date) => setValue("arrivalDate", date ?? new Date())}
-                />
-            </td>
-            <td>
-                <DatePicker
                     selected={getValues().departureDate}
                     timeInputLabel="Time:"
                     dateFormat="MM/dd/yyyy h:mm aa"
                     showTimeInput
-                    placeholderText="Select a date and time"
+                    placeholderText="Select a departure date"
                     required
                     onChange={(date) => setValue("departureDate", date?? new Date())}
                 />
-                {errors.departureDate && (<p className='eror-messsage'>Must be after Departure Date</p>)}
+                {errors.departureDate && (<p className='eror-messsage'>Must be before arrival date</p>)}
+            </td>
+            <td>
+                <DatePicker
+                    selected={getValues().arrivalDate}
+                    timeInputLabel="Time:"
+                    dateFormat="MM/dd/yyyy h:mm aa"
+                    showTimeInput
+                    placeholderText="Select an arrival date"
+                    required
+                    onChange={(date) => setValue("arrivalDate", date ?? new Date())}
+                />
             </td>
             <td>
                 <input
@@ -100,24 +104,28 @@ const EditableRow = (props: {item: CreateTrainScheduleDto, editTrainSchedule: (e
             <td>
                 <input
                     type="number"
-                    placeholder='Enter a price: '
-                    {...register("price", { required:true, min: 0 })}
+                    placeholder='Enter a price'
+                    {...register("price", { setValueAs: v => +v, required:true, min: 0 })}
                 />
                 {errors.price && (<p className='eror-messsage'>Must be positive</p>)}
             </td>
             <td>
-                <Dropdown options={options} value={defaultOption} placeholder="Select an option" />
+                <Dropdown options={options} value={getValues().typeOfTrainCar} onChange={(option) => setValue("typeOfTrainCar", option.value)} placeholder="Select an option" />
+                {errors.typeOfTrainCar && (<p className='eror-messsage'>This field is required</p>)}
             </td>
             <td>
                 <input
                     type="number"
                     placeholder='Enter a Sits Count: '
-                    {...register("sitsCount", { required:true, min: 1 })}
+                    {...register("sitsCount", { setValueAs: v => +v, required:true, min: 1 })}
                 />
-                {errors.price && (<p className='eror-messsage'>Must be positive</p>)}
+                {errors.sitsCount && (<p className='eror-messsage'>Must be positive</p>)}
             </td>
-            <td><button type="submit" onClick={onSubmit}>Save</button></td>
-            <td><button type="submit" onClick={cancenEdit}>Cancel</button></td>
+
+            {
+                props.item.id > 0 ? (<><td><button type="submit" onClick={handleSubmit(onSubmit)}>Save</button><button onClick={cancenEdit}>Cancel</button></td></>) :
+                            (<td><button type="submit" onClick={handleSubmit(onSubmit)}>Add</button></td>)
+            }
         </tr>
     )
 }

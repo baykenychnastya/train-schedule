@@ -10,7 +10,6 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
-import { UpdateTrainScheduleDto } from 'src/train-schedules/dtos/updateTrainSchedule.dto';
 import { TrainSchedulesService } from 'src/train-schedules/services/train-schedules/train-schedules.service';
 import { TrainSchedule } from 'src/typeorm/entities/TrainSchedule';
 import { CreateTrainScheduleDto } from '../../../train-schedules/dtos/createTrainSchedule.dto';
@@ -36,7 +35,7 @@ export class ThainScheduleController {
   @Put(':id')
   async updateTrainScheduleById(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateTrainScheduleDto: UpdateTrainScheduleDto,
+    @Body() updateTrainScheduleDto: CreateTrainScheduleDto,
   ) {
     await this.trainScheduleService.updateTrainSchedule(
       id,

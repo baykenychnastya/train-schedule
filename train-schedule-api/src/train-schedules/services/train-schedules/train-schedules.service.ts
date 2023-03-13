@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TrainSchedule } from '../../../typeorm/entities/TrainSchedule';
 import { Repository } from 'typeorm';
 import { CreateTrainScheduleDto } from 'src/train-schedules/dtos/createTrainSchedule.dto';
-import { UpdateTrainScheduleDto } from 'src/train-schedules/dtos/updateTrainSchedule.dto';
 
 @Injectable()
 export class TrainSchedulesService {
@@ -26,7 +25,7 @@ export class TrainSchedulesService {
     return this.trainScheduleRepository.save(newTrainSchedule);
   }
 
-  updateTrainSchedule(id: number, updateTrainSchedule: UpdateTrainScheduleDto) {
+  updateTrainSchedule(id: number, updateTrainSchedule: CreateTrainScheduleDto) {
     this.trainScheduleRepository.update(
       { id },
       {
