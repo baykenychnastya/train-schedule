@@ -1,39 +1,57 @@
-import React, {useState} from 'react'
+import React, {useState, Fragment, useEffect} from 'react'
 import { CreateTrainScheduleDto } from './dto/create-train-schedule.dto';
 import  './App.css'
+import  './styles/table.css'
+import  './styles/input.css'
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import ReadOnlyRow from './components/read-only-row';
+import EditableRow from './components/editable-row';
+import { TrainScheduleService } from './services/train-schedule.service';
+import "react-datepicker/dist/react-datepicker.css";
 import { useForm } from 'react-hook-form';
 
 function App() {
-  //let trainSchedules: CreateTrainScheduleDto[] = [{startStation: 'ikik'} as  CreateTrainScheduleDto];
-  const [trainSchedules, setTrainSchedule] = useState<CreateTrainScheduleDto[]>([]);
-  // async function addPost(body: CreateTrainScheduleDto) {
-  //   await fetch(`${process.env.REACT_APP_SERVER}/train-schedules`, {
-  //       method: 'POST',
-  //       body: JSON.stringify(body),
-  //       headers: {
-  //         'Content-type': 'application/json; charset=UTF-8',
-  //       },
-  //   })
-  //   .then((data) => {
-  //     let data2 = data.json()
-  //     setValue('name', '');
-  //     setValue('email', '');
-  //     setValue('message', '');
-  //     alert("Feedback was successfuly sent!");
-  //   })
-  //   .catch((err) => {
-  //     console.log(err.message);
-  //   });
-  // };
 
-async function getTrainSchedules() {
-    await fetch(`${process.env.REACT_APP_SERVER}/train-schedules`, {
-        method: 'GET',
-        headers: {
-          'Content-type': 'application/json; charset=UTF-8',
-        },
-    })
-    .then(response => response.json())
+  const [trainSchedules, setTrainSchedule] = useState<CreateTrainScheduleDto[]>([]);
+  const [newTrainSchedule, setNewTrainSchedule] = useState<CreateTrainScheduleDto>({} as CreateTrainScheduleDto);
+  const [editTrainScheduleId, setEditTrainScheduleId] = useState<number>(0);
+
+  const handleAddSubmit = (event: any) => {
+    event.preventDefault();
+    setTrainSchedule([...trainSchedules, newTrainSchedule]);
+    addPost(newTrainSchedule);
+  }
+
+  const handleEditSubmit = (event: any, scheduleDto: CreateTrainScheduleDto) => {
+    event.preventDefault();
+
+    const newTrainSchedules = [...trainSchedules];
+    const index = trainSchedules.findIndex((trainSchedule) => trainSchedule.id === editTrainScheduleId);
+    newTrainSchedules[index] = scheduleDto;
+    setTrainSchedule(newTrainSchedules);
+
+    updateTrainSchedul(scheduleDto);
+    cancelEdit();
+  }
+
+  function cancelEdit() {
+    setEditTrainScheduleId(0);
+  }
+
+  function editTrainSchedule(event: any, item: CreateTrainScheduleDto) {
+    event.preventDefault();
+    setEditTrainScheduleId(item.id)
+    setTrainSchedule(trainSchedules);
+  }
+
+  const handleDeleteSubmit = (event: any, id: number) => {
+    event.preventDefault();
+    deleteTrainSchedule(id);
+  }
+
+  async function getTrainSchedules() {
+    await TrainScheduleService.getAll()
     .then((getTrainSchedules: CreateTrainScheduleDto[]) => {
 
         getTrainSchedules.forEach(element => {
@@ -41,61 +59,147 @@ async function getTrainSchedules() {
           element.departureDate = new Date(element.departureDate)
         });
 
-        setTrainSchedule(getTrainSchedules);
+        let trains: CreateTrainScheduleDto[] = [];
+
+        getTrainSchedules.forEach(element => {
+          trains.push(element);
+        });
+
+        setTrainSchedule(trains);
     });
   }
 
+  async function addPost(trainSchedule: CreateTrainScheduleDto) {
+    await TrainScheduleService.add(trainSchedule)
+    .then((data) => {
+      let createdTrainSchedule: CreateTrainScheduleDto = data;
+      trainSchedule.id = createdTrainSchedule.id;
+      alert("Successfuly added!");
+    });
+  };
+
+  async function updateTrainSchedul(trainSchedule: CreateTrainScheduleDto) {
+    await TrainScheduleService.update(trainSchedule)
+  }
+
   async function deleteTrainSchedule(id: number) {
-    await fetch(`${process.env.REACT_APP_SERVER}/train-schedules/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-type': 'application/json; charset=UTF-8',
-        },
-    })
+    await TrainScheduleService.delete(id)
     .then(() => {
         setTrainSchedule(trainSchedules.filter(item => item.id !== id));
     });
   }
 
+  useEffect(() => {
+    getTrainSchedules();
+  }, []);
+
+
+    const {
+    register,
+    watch,
+    handleSubmit,
+    setValue,
+    formState: { errors }
+  } = useForm();
+
+
   return (
     <div>
-      <button onClick={getTrainSchedules}>Click
-      </button>
-      <table>
-        <thead>
-        <tr>
-          <th>№</th>
-          <th>Start Station</th>
-          <th>End Station</th>
-          <th>Departure Date</th>
-          <th>Arrival Date</th>
-          <th>Train Number</th>
-          <th>Price</th>
-          <th>Type Of Train Car</th>
-          <th>Sits Count</th>
-          <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
+      <form>
+        <table>
+          <thead>
+          <tr>
+            <th>№</th>
+            <th>Start Station</th>
+            <th>End Station</th>
+            <th>Departure Date</th>
+            <th>Arrival Date</th>
+            <th>Train Number</th>
+            <th>Price</th>
+            <th>Type Of Train Car</th>
+            <th>Sits Count</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
 
-          {trainSchedules.map((item, index) => {
-            return (
-              <tr key={index}>
-                <td>{index+1}</td>
-                <td>{item.startStation}</td>
-                <td>{item.endStation}</td>
-                <td>{item.departureDate.toDateString()}</td>
-                <td>{item.arrivalDate.toDateString()}</td>
-                <td>{item.trainNumber}</td>
-                <td>{item.price}</td>
-                <td>{item.typeOfTrainCar}</td>
-                <td>{item.sitsCount}</td>
-                <td><button onClick={() => deleteTrainSchedule(item.id)}>X</button></td>
-              </tr>
-          )
-          })}
-        </tbody>
-      </table>
+            {trainSchedules.map((item, index) => (
+              <Fragment>
+                {editTrainScheduleId === item.id? <EditableRow item={item} editTrainSchedule={handleEditSubmit} cancelEdit={cancelEdit}/>:
+                <ReadOnlyRow item={item} index={index} deleteTrainSchedule={handleDeleteSubmit} editTrainSchedule={editTrainSchedule}/>}
+              </Fragment>
+            ))}
+          </tbody>
+        </table>
+      </form>
+      <form onSubmit={handleAddSubmit}>
+
+        <input
+          type="text"
+          placeholder='Enter an Start Station: '
+          {...register("startStation", { setValueAs: v => v.trim(), required:true, minLength: 1, maxLength: 50 })}
+          />
+          {errors.startStation && (<p className='eror-messsage'>Must be between 1 and 50 characters</p>)}
+        <input
+          type="text"
+          name="endStation"
+          required
+          placeholder='Enter an End Station '
+          onChange={event => setNewTrainSchedule({ ...newTrainSchedule, endStation: event.target.value})}
+        />
+        <div className='datePicker'>
+        <DatePicker
+          selected={newTrainSchedule.arrivalDate}
+          timeInputLabel="Time:"
+          dateFormat="MM/dd/yyyy h:mm aa"
+          showTimeInput
+          placeholderText="Select a date and time"
+          required
+          onChange={(date) => setNewTrainSchedule({ ...newTrainSchedule, arrivalDate: date ?? new Date()})}
+        />
+        </div>
+        <div className='datePicker'>
+        <DatePicker
+          selected={newTrainSchedule.departureDate}
+          timeInputLabel="Time:"
+          dateFormat="MM/dd/yyyy h:mm aa"
+          showTimeInput
+          placeholderText="Select a date and time"
+          required
+          onChange={(date) => setNewTrainSchedule({ ...newTrainSchedule, departureDate: date ?? new Date()})}
+        />
+        </div>
+        <input
+          type="text"
+          name="trainNumber"
+          required
+          placeholder='Enter a Train Number: '
+          onChange={event => setNewTrainSchedule({ ...newTrainSchedule, trainNumber: event.target.value})}
+        />
+        <input
+          type="number"
+          name="price"
+          required
+          placeholder='Enter a price: '
+          // onChange={newTrainSchedule2.handleChange('price')}
+        />
+        {/* {newTrainSchedule2.errors.price && <p className="error">{newTrainSchedule2.errors.price}</p>} */}
+        <input
+          type="text"
+          name="typeOfTrainCar"
+          required
+          placeholder='Enter a Type Of TrainCar: '
+          onChange={event => setNewTrainSchedule({ ...newTrainSchedule, typeOfTrainCar: event.target.value})}
+        />
+        <input
+          type="number"
+          name="sitsCount"
+          required
+          placeholder='Enter a Sits Count: '
+          onChange={event => setNewTrainSchedule({ ...newTrainSchedule, sitsCount: +event.target.value})}
+        />
+        <button type="submit">Add</button>
+      </form>
     </div>
   );
 }

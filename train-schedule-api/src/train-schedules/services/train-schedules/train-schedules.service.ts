@@ -20,12 +20,21 @@ export class TrainSchedulesService {
   createTrainSchedule(createTrainSchedule: CreateTrainScheduleDto) {
     const newTrainSchedule = this.trainScheduleRepository.create({
       ...createTrainSchedule,
+      arrivalDate: new Date(createTrainSchedule.arrivalDate),
+      departureDate: new Date(createTrainSchedule.departureDate),
     });
     return this.trainScheduleRepository.save(newTrainSchedule);
   }
 
   updateTrainSchedule(id: number, updateTrainSchedule: UpdateTrainScheduleDto) {
-    this.trainScheduleRepository.update({ id }, { ...updateTrainSchedule });
+    this.trainScheduleRepository.update(
+      { id },
+      {
+        ...updateTrainSchedule,
+        arrivalDate: new Date(updateTrainSchedule.arrivalDate),
+        departureDate: new Date(updateTrainSchedule.departureDate),
+      },
+    );
   }
 
   deleteTrainSchedule(id: number) {

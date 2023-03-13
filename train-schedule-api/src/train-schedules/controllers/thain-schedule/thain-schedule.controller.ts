@@ -12,6 +12,7 @@ import {
 import { ValidationPipe } from 'src/pipes/validation.pipe';
 import { UpdateTrainScheduleDto } from 'src/train-schedules/dtos/updateTrainSchedule.dto';
 import { TrainSchedulesService } from 'src/train-schedules/services/train-schedules/train-schedules.service';
+import { TrainSchedule } from 'src/typeorm/entities/TrainSchedule';
 import { CreateTrainScheduleDto } from '../../../train-schedules/dtos/createTrainSchedule.dto';
 
 @Controller('train-schedules')
@@ -24,7 +25,9 @@ export class ThainScheduleController {
   }
   @UsePipes(ValidationPipe)
   @Post()
-  createTrainSchedule(@Body() createTrainScheduleDto: CreateTrainScheduleDto) {
+  createTrainSchedule(
+    @Body() createTrainScheduleDto: CreateTrainScheduleDto,
+  ): Promise<TrainSchedule> {
     return this.trainScheduleService.createTrainSchedule(
       createTrainScheduleDto,
     );
