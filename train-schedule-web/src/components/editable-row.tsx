@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { CreateTrainScheduleDto } from "../dto/create-train-schedule.dto";
@@ -9,12 +9,11 @@ import  '../styles/input.css'
 
 const EditableRow = (
     props: {
-        item: CreateTrainScheduleDto,
-        editTrainSchedule: (item: CreateTrainScheduleDto) => void,
+        itemToEdit: CreateTrainScheduleDto,
+        saveChanges: (item: CreateTrainScheduleDto) => void,
         cancelEdit: () => void
     }
 ) => {
-
     const {
         register,
         watch,
@@ -22,25 +21,24 @@ const EditableRow = (
         setValue,
         getValues,
         formState: { errors }
-    } = useForm<CreateTrainScheduleDto>({defaultValues: props.item});
+    } = useForm<CreateTrainScheduleDto>({defaultValues: props.itemToEdit});
 
     useEffect(() => {
         register("departureDate", { required:true, validate: { isBefore } });
         register("typeOfTrainCar", { required:true });
 
         watch();
-    });
+    }, []);
 
     const onSubmit = () => {
         let newTrainSchedule = getValues();
-        props.editTrainSchedule(newTrainSchedule);
+        props.saveChanges(newTrainSchedule);
     };
 
-    const cancenEdit = (event: any) => {
+    const cancelEdit = (event: any) => {
         event.preventDefault();
         props.cancelEdit();
     }
-
 
     const isBefore = (date: Date) => {
         if (!date) {
@@ -123,7 +121,7 @@ const EditableRow = (
             </td>
 
             {
-                props.item.id > 0 ? (<><td><button type="submit" onClick={handleSubmit(onSubmit)}>Save</button><button onClick={cancenEdit}>Cancel</button></td></>) :
+                props.itemToEdit.id > 0 ? (<><td><button className="blue-button" type="submit" onClick={handleSubmit(onSubmit)}>Save</button><button className="red-button" onClick={cancelEdit}>Cancel</button></td></>) :
                             (<td><button type="submit" onClick={handleSubmit(onSubmit)}>Add</button></td>)
             }
         </tr>

@@ -111,8 +111,8 @@ function App() {
 
             {trainSchedules.map((item, index) => (
               <Fragment>
-                {editTrainScheduleId === item.id? <EditableRow item={item} editTrainSchedule={handleEditSubmit} cancelEdit={cancelEdit}/>:
-                <ReadOnlyRow item={item} index={index} deleteTrainSchedule={handleDeleteSubmit} editTrainSchedule={editTrainSchedule}/>}
+                {editTrainScheduleId === item.id? <EditableRow itemToEdit={item} saveChanges={handleEditSubmit} cancelEdit={cancelEdit}/>:
+                <ReadOnlyRow item={item} index={index} delete={handleDeleteSubmit} edit={editTrainSchedule}/>}
               </Fragment>
             ))}
           </tbody>
@@ -124,7 +124,7 @@ function App() {
           <thead>
           </thead>
           <tbody>
-            <EditableRow item={{} as CreateTrainScheduleDto} editTrainSchedule={handleAddSubmit} cancelEdit={cancelEdit}/>
+            <EditableRow itemToEdit={{} as CreateTrainScheduleDto} saveChanges={handleAddSubmit} cancelEdit={cancelEdit}/>
           </tbody>
         </table>
       </form>

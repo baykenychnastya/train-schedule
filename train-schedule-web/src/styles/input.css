@@ -23,7 +23,7 @@ form input[type="number"]:focus {
     box-shadow: 0 0 5px #1B5E20;
 }
 
-form button[type="submit"] {
+form button[type="submit"], .red-button, .blue-button {
     background-color: #1B5E20;
     border: none;
     border-radius: 5px;
@@ -55,4 +55,12 @@ form button[type="submit"]:hover {
 
 .datePicker {
     display: 'inline-block';
+}
+
+.red-button {
+    background-color: #eb676b;
+}
+
+.blue-button {
+    background-color: #4461e0 !important;
 }

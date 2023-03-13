@@ -1,6 +1,10 @@
 import { CreateTrainScheduleDto } from "../dto/create-train-schedule.dto";
 
-const ReadOnlyRow = (props: {item: CreateTrainScheduleDto, index: number, deleteTrainSchedule: (event: any, id: number) => void, editTrainSchedule: (event: any, item: CreateTrainScheduleDto) => void}) => {
+const ReadOnlyRow = (props: {
+    item: CreateTrainScheduleDto,
+        index: number,
+        delete: (event: any, id: number) => void,
+        edit: (event: any, item: CreateTrainScheduleDto) => void}) => {
     return (
         <tr key={props.index}>
                 <td>{props.index+1}</td>
@@ -12,8 +16,10 @@ const ReadOnlyRow = (props: {item: CreateTrainScheduleDto, index: number, delete
                 <td>{props.item.price}</td>
                 <td>{props.item.typeOfTrainCar}</td>
                 <td>{props.item.sitsCount}</td>
-                <td><button onClick={(event) => props.deleteTrainSchedule(event, props.item.id)}>X</button>
-                <button onClick={(event) => props.editTrainSchedule(event, props.item)}>Edit</button></td>
+                <td>
+                    <button className="blue-button" onClick={(event) => props.edit(event, props.item)}>Edit</button>
+                    <button className="red-button" onClick={(event) => props.delete(event, props.item.id)}>Delete</button>
+                </td>
               </tr>
     )
 }
