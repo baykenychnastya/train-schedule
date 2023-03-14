@@ -39,4 +39,8 @@ export class TrainSchedulesService {
   deleteTrainSchedule(id: number) {
     this.trainScheduleRepository.delete({ id });
   }
+
+  async queryBuilder(alias: string) {
+    return this.trainScheduleRepository.createQueryBuilder(alias);
+  }
 }

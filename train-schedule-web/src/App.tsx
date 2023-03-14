@@ -3,18 +3,17 @@ import { CreateTrainScheduleDto } from './dto/create-train-schedule.dto';
 import  './App.css'
 import  './styles/table.css'
 import  './styles/input.css'
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import ReadOnlyRow from './components/read-only-row';
 import EditableRow from './components/editable-row';
 import { TrainScheduleService } from './services/train-schedule.service';
 import "react-datepicker/dist/react-datepicker.css";
-import { useForm } from 'react-hook-form';
 
 function App() {
 
   const [trainSchedules, setTrainSchedule] = useState<CreateTrainScheduleDto[]>([]);
   const [editTrainScheduleId, setEditTrainScheduleId] = useState<number>(0);
+  const [serchString, setSerchString] = useState<string>('');
 
   const handleAddSubmit = (scheduleDto: CreateTrainScheduleDto) => {
     setTrainSchedule([...trainSchedules, scheduleDto]);
@@ -29,6 +28,11 @@ function App() {
 
     updateTrainSchedul(scheduleDto);
     cancelEdit();
+  }
+
+  const handleSerchSubmit = (event: any) => {
+    setSerchString(event.target.value);
+    getTrainSchedules(event.target.value);
   }
 
   function cancelEdit() {
@@ -46,22 +50,15 @@ function App() {
     deleteTrainSchedule(id);
   }
 
-  async function getTrainSchedules() {
-    await TrainScheduleService.getAll()
+  async function getTrainSchedules(serchString: string) {
+    await TrainScheduleService.getAll(serchString)
     .then((getTrainSchedules: CreateTrainScheduleDto[]) => {
-
         getTrainSchedules.forEach(element => {
           element.arrivalDate = new Date(element.arrivalDate);
           element.departureDate = new Date(element.departureDate)
         });
 
-        let trains: CreateTrainScheduleDto[] = [];
-
-        getTrainSchedules.forEach(element => {
-          trains.push(element);
-        });
-
-        setTrainSchedule(trains);
+        setTrainSchedule(getTrainSchedules);
     });
   }
 
@@ -86,11 +83,14 @@ function App() {
   }
 
   useEffect(() => {
-    getTrainSchedules();
+    getTrainSchedules(serchString);
   }, []);
 
   return (
     <div>
+      <input type="text" id="myInput" placeholder="Search for..."
+      onKeyUp={handleSerchSubmit}
+      />
       <form>
         <table>
           <thead>

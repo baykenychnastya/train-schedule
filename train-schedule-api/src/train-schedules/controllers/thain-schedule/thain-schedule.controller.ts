@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Delete,
   UsePipes,
+  Query,
 } from '@nestjs/common';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
 import { TrainSchedulesService } from 'src/train-schedules/services/train-schedules/train-schedules.service';
@@ -17,11 +18,29 @@ import { CreateTrainScheduleDto } from '../../../train-schedules/dtos/createTrai
 @Controller('train-schedules')
 export class ThainScheduleController {
   constructor(private trainScheduleService: TrainSchedulesService) {}
+
   @Get()
-  async getTrainSchedules() {
-    const trainSchedules = await this.trainScheduleService.findTrainSchedule();
-    return trainSchedules;
+  async getTrainSchedules(
+    @Query('searchString') searchString: string,
+    @Query('sortString') sortString = 'id',
+    @Query('sortType') sortType: 'ASC' | 'DESC' = 'ASC',
+  ) {
+    const builder = await this.trainScheduleService.queryBuilder(
+      'trainschedule',
+    );
+    if (searchString) {
+      builder.where(
+        'trainschedule.startStation LIKE :s OR trainschedule.endStation LIKE :s OR trainschedule.arrivalDate LIKE :s OR trainschedule.departureDate LIKE :s OR trainschedule.trainNumber LIKE :s OR trainschedule.price LIKE :s OR trainschedule.typeOfTrainCar LIKE :s OR trainschedule.sitsCount LIKE :s',
+        { s: `%${searchString}%` },
+      );
+    }
+
+    if (sortString) {
+      builder.orderBy(`trainschedule.${sortString}`, sortType);
+    }
+    return await builder.getMany();
   }
+
   @UsePipes(ValidationPipe)
   @Post()
   createTrainSchedule(
@@ -37,14 +56,11 @@ export class ThainScheduleController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateTrainScheduleDto: CreateTrainScheduleDto,
   ) {
-    await this.trainScheduleService.updateTrainSchedule(
-      id,
-      updateTrainScheduleDto,
-    );
+    this.trainScheduleService.updateTrainSchedule(id, updateTrainScheduleDto);
   }
 
   @Delete(':id')
   async deleteTrainScheduleById(@Param('id', ParseIntPipe) id: number) {
-    await this.trainScheduleService.deleteTrainSchedule(id);
+    this.trainScheduleService.deleteTrainSchedule(id);
   }
 }
