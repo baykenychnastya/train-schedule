@@ -1,13 +1,12 @@
 import { CreateTrainScheduleDto } from "../dto/create-train-schedule.dto";
 
 export class TrainScheduleService {
-    static async getAll(serchString: string): Promise<CreateTrainScheduleDto[]> {
-        return await fetch(`${process.env.REACT_APP_SERVER}/train-schedules?searchString=${serchString}`, {
+    static async getAll(serchString: string, sortString: string, sortType: "ASC" | "DESC"): Promise<CreateTrainScheduleDto[]> {
+        return await fetch(`${process.env.REACT_APP_SERVER}/train-schedules?searchString=${serchString}&sortString=${sortString}&sortType=${sortType}`, {
             method: 'GET',
             headers: {
             'Content-type': 'application/json; charset=UTF-8',
             },
-            
         })
         .then(response => response.json());
     }

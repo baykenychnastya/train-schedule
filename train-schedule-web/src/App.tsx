@@ -14,6 +14,8 @@ function App() {
   const [trainSchedules, setTrainSchedule] = useState<CreateTrainScheduleDto[]>([]);
   const [editTrainScheduleId, setEditTrainScheduleId] = useState<number>(0);
   const [serchString, setSerchString] = useState<string>('');
+  const [sortString, setSortString] = useState<string>('id');
+  const [sortType, setSortType] = useState<"ASC" | "DESC">("ASC");
 
   const handleAddSubmit = (scheduleDto: CreateTrainScheduleDto) => {
     setTrainSchedule([...trainSchedules, scheduleDto]);
@@ -32,7 +34,17 @@ function App() {
 
   const handleSerchSubmit = (event: any) => {
     setSerchString(event.target.value);
-    getTrainSchedules(event.target.value);
+    getTrainSchedules(event.target.value, sortString, sortType);
+  }
+
+  const handleSortSubmit = (newSortString: string) => {
+    let newSortType:  "DESC" | "ASC" = "ASC";
+    if(sortString === newSortString) {
+      newSortType = sortType==="ASC"? "DESC":"ASC";
+    }
+    setSortType(newSortType);
+    setSortString(newSortString);
+    getTrainSchedules(serchString, newSortString, newSortType);
   }
 
   function cancelEdit() {
@@ -50,8 +62,8 @@ function App() {
     deleteTrainSchedule(id);
   }
 
-  async function getTrainSchedules(serchString: string) {
-    await TrainScheduleService.getAll(serchString)
+  async function getTrainSchedules(serchString: string, sortString: string, sortType: "ASC" | "DESC") {
+    await TrainScheduleService.getAll(serchString, sortString, sortType)
     .then((getTrainSchedules: CreateTrainScheduleDto[]) => {
         getTrainSchedules.forEach(element => {
           element.arrivalDate = new Date(element.arrivalDate);
@@ -83,7 +95,7 @@ function App() {
   }
 
   useEffect(() => {
-    getTrainSchedules(serchString);
+    getTrainSchedules(serchString, sortString, sortType);
   }, []);
 
   return (
@@ -96,15 +108,15 @@ function App() {
           <thead>
           <tr>
             <th>№</th>
-            <th>Start Station</th>
-            <th>End Station</th>
-            <th>Departure Date</th>
-            <th>Arrival Date</th>
-            <th>Train Number</th>
-            <th>Price</th>
-            <th>Type Of Train Car</th>
-            <th>Sits Count</th>
-            <th>Actions</th>
+            <th onClick={() =>handleSortSubmit('startStation')}>Start Station</th>
+            <th onClick={() =>handleSortSubmit('endStation')}>End Station</th>
+            <th onClick={() =>handleSortSubmit('startStation')}>Departure Date</th>
+            <th onClick={() =>handleSortSubmit('startStation')}>Arrival Date</th>
+            <th onClick={() =>handleSortSubmit('startStation')}>Train Number</th>
+            <th onClick={() =>handleSortSubmit('startStation')}>Price</th>
+            <th onClick={() =>handleSortSubmit('startStation')}>Type Of Train Car</th>
+            <th onClick={() =>handleSortSubmit('startStation')}>Sits Count</th>
+            <th onClick={() =>handleSortSubmit('startStation')}>Actions</th>
           </tr>
           </thead>
           <tbody>
