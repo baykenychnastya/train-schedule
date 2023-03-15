@@ -10,8 +10,8 @@ const ReadOnlyRow = (props: {
                 <td>{props.index+1}</td>
                 <td>{props.item.startStation}</td>
                 <td>{props.item.endStation}</td>
-                <td>{props.item.arrivalDate.toLocaleString('uk-UA', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' })}</td>
                 <td>{props.item.departureDate.toLocaleString('uk-UA', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' })}</td>
+                <td>{props.item.arrivalDate.toLocaleString('uk-UA', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' })}</td>
                 <td>{props.item.trainNumber}</td>
                 <td>{props.item.price}</td>
                 <td>{props.item.typeOfTrainCar}</td>

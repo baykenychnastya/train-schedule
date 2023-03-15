@@ -18,11 +18,3 @@ export interface CreateTrainScheduleDto {
   sitsCount: number;
 }
 
-// export class TrainSchedule {
-//   dto: CreateTrainScheduleDto;
-//   isEditable: boolean = false;
-
-//   constructor(dto: CreateTrainScheduleDto) {
-//     this.dto = dto;
-//   }
-// }

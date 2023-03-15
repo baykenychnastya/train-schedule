@@ -108,15 +108,55 @@ function App() {
           <thead>
           <tr>
             <th>№</th>
-            <th onClick={() =>handleSortSubmit('startStation')}>Start Station</th>
-            <th onClick={() =>handleSortSubmit('endStation')}>End Station</th>
-            <th onClick={() =>handleSortSubmit('startStation')}>Departure Date</th>
-            <th onClick={() =>handleSortSubmit('startStation')}>Arrival Date</th>
-            <th onClick={() =>handleSortSubmit('startStation')}>Train Number</th>
-            <th onClick={() =>handleSortSubmit('startStation')}>Price</th>
-            <th onClick={() =>handleSortSubmit('startStation')}>Type Of Train Car</th>
-            <th onClick={() =>handleSortSubmit('startStation')}>Sits Count</th>
-            <th onClick={() =>handleSortSubmit('startStation')}>Actions</th>
+            <th className={
+              sortString === "startStation"?
+                    sortType === "DESC"
+                        ? "desc"
+                        : "asc": ""
+                  } onClick={() =>handleSortSubmit('startStation')}>Start Station</th>
+            <th  className={
+                    sortString === "endStation"?
+                    sortType === "DESC"
+                        ? "desc"
+                        : "asc": ""
+                  } onClick={() =>handleSortSubmit('endStation')}>End Station</th>
+            <th className={
+                    sortString === "arrivalDate"?
+                    sortType === "DESC"
+                        ? "desc"
+                        : "asc": ""
+                  }  onClick={() =>handleSortSubmit('arrivalDate')}>Departure Date</th>
+            <th className={
+                    sortString === "departureDate"?
+                    sortType === "DESC"
+                        ? "desc"
+                        : "asc": ""
+                  }  onClick={() =>handleSortSubmit('departureDate')}>Arrival Date</th>
+            <th className={
+                    sortString === "trainNumber"?
+                    sortType === "DESC"
+                        ? "desc"
+                        : "asc": ""
+                  }  onClick={() =>handleSortSubmit('trainNumber')}>Train Number</th>
+            <th className={
+                    sortString === "price"?
+                    sortType === "DESC"
+                        ? "desc"
+                        : "asc": ""
+                  }  onClick={() =>handleSortSubmit('price')}>Price</th>
+            <th className={
+                    sortString === "typeOfTrainCar"?
+                    sortType === "DESC"
+                        ? "desc"
+                        : "asc": ""
+                  }  onClick={() =>handleSortSubmit('typeOfTrainCar')}>Type Of Train Car</th>
+            <th className={
+                    sortString === "sitsCount"?
+                    sortType === "DESC"
+                        ? "desc"
+                        : "asc": ""
+                  }  onClick={() =>handleSortSubmit('sitsCount')}>Sits Count</th>
+            <th>Actions</th>
           </tr>
           </thead>
           <tbody>
